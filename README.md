@@ -12,7 +12,13 @@ After each guess your opponent (i.e. the computer) provides the following feedba
 The game is over when the target number is correctly guessed exactly. Your program should, in
 addition to congratulating the player, display the number of guesses the player used. A given guess may generate
 
+
 • either a single “Bagel” response, or
+
 • between 1-3 “Fermi”s, or
+
 • between 1-4 “Pico”s, or
-• some combination of “Fermi”s and “Pico”s, with a maximum of four words total, or • an indication that the game is over since the word was correctly guessed.
+
+• some combination of “Fermi”s and “Pico”s, with a maximum of four words total, or 
+
+• an indication that the game is over since the word was correctly guessed.
