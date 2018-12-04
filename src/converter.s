@@ -18,6 +18,16 @@
 .text 
 	.globl main
 			main:
+				getRequest:
+					li $v0, 4
+					la $a0, req # Load the request
+					syscall
+				loadRequest:
+					# Per the MIPS documentation,
+					# $a0 is the address of input buffer and
+					# $a1 is the maximum number of characters to read. 
+					la $a0, 
+				
 				jal conversion
 			conversion:
 			
