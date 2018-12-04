@@ -1,24 +1,23 @@
-# Mastermind
-The Game of Mastermind written in MIPS assembly
-
-The (modified) game of MasterMind is played as follows: First your opponent (i.e. the computer) selects a four digit number. Each of the digits in this number are guaranteed to be unique; further- more the first digit will never be a zero. The player then repeatedly guesses four digit numbers (with the same properties as the target number) until correct.
-After each guess your opponent (i.e. the computer) provides the following feedback to the player:
-
-• For each digit in the guess that appears in the target in the same place in both the target and guess; the word “Fermi” is output.
-
-• For each digit in the guess that appears in the target, but in a different position; the work “Pico” is output.
-
-• If no digits in the guess appear in the target, then the work “Bagels” is output.
-The game is over when the target number is correctly guessed exactly. Your program should, in
-addition to congratulating the player, display the number of guesses the player used. A given guess may generate
+# Roman Numeral Converter
+A Roman numeral conversion program that accepts as input, values expressed in Roman digits and outputs the value of the input using standard “arabic” notation.
 
 
-• either a single “Bagel” response, or
+After successfully converting an input, the program allows the user to run repeated conversions without having to restart the program each time. Hence the user will repeatedly be prompted for a value to convert. The user will enter 0 to indicate they are done performing searches.
 
-• between 1-3 “Fermi”s, or
 
-• between 1-4 “Pico”s, or
+Description of Roman Numerals:
+M=1000 D=500 C=100 L=50 X=10 V=5 I=1
 
-• some combination of “Fermi”s and “Pico”s, with a maximum of four words total, or 
 
-• an indication that the game is over since the word was correctly guessed.
+Digit Order: Roman digits are written in non-ascending order, and digit values are added to pro- duce the represented value, except for prefixes as mentioned below.
+
+
+Number of Occurrences: No more than three occurrences of M, C, X, or I may appear consecutively, and no more than one D, L, or V may appear at all.
+
+
+Prefixes: The digits C, X and I can be used as prefixes, and their value is then subtracted from rather than added to the value being accumulated, as follows:
+• One C may prefix an M or a D to represent 900 or 400; the prefixed M is written after the other M’s, as in MMMCM. The digits following the M or D represent a value of no more than 99.
+• One X may prefix a C or an L to represent 90 or 40; the prefixed C is written after the other C’s. The digits following the C or L represent a value of no more than 9.
+• One I may prefix an X or a V to represent 9 or 4. The prefixed digit must appear at the end of the numeral.
+3
+Some examples: MCMLXXXVIII = 1988 MCMCCIX = 1999 CCCXXXIX = 339 T
