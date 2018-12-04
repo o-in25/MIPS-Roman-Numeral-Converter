@@ -1,240 +1,192 @@
-.data
-	# Lookup tables
-	roman: .asciiz "MDCLXVI"
-	values: .byte  1000, 500, 100, 50, 10, 5, 1
+            .globl main
+main:                               # convert roman numerals to arabic numerals
+            .text
 
-	# Input
-	input1: .word 4
-	input2: .asciiz "\n "   
-	input3: .asciiz "\n "   
-	input4: .asciiz "\n"
+            # initialize registers that we use
+            add $t0, $zero, $zero
+            add $t1, $zero, $zero
+            add $t2, $zero, $zero
+            add $t5, $zero, $zero
+            add $t6, $zero, $zero
+            add $t7, $zero, $zero
+            add $s0, $zero, $zero
+            add $s1, $zero, $zero
+            add $s7, $zero, $zero
 
-	# Conversion
-	left: .word 0
-	sum: .word 0
+            # populate $t7 with an array containing the Roman numerals
 
-	# I/O and program control
-	convertAgain: .word 2
-	prompt1: .asciiz "\nPlease enter the Roman Number: "
-	outRecap: .asciiz "\n Entered Roman Number: "
-	outFinal: .asciiz "\n Equivalent decimal value is: "
-	loopdriver: .asciiz "\nWould you like to convert another number??? Enter 1 for YES and 2 for NO: "
-	stop: .asciiz "\n\nProgram complete.\n"
+            la $t7, romans
 
-	# Exception handling
-	error1: .asciiz "\nThe Roman number you have entered contains invalid character(s). Please try again.\n"
-.text
+            # 0($t7) will contain I, 1, ascii 73
+            # 1($t7) will contain V, 5, ascii 86
+            # 2($t7) will contain X, 10, ascii 88
+            # 3($t7) will contain L, 50, ascii 76
+            # 4($t7) will contain C, 100, ascii 67
+            # 5($t7) will contain D, 500, ascii 68
+            # 6($t7) will contain M, 1000, ascii 77
+            
+            # test to make sure correct values are in array
 
-	.globl main
-	main:
-		jal printPrompt
-		readInput:
-			# Load the word reserved for input, and read in the Roman number str input by the user   
-			la $a0, input1 # Load contents of input1 (i.e. space allocated to save the input str) into $a0
-			la $a1, input1 # Load the length allocated for input1 (i.e. 4 bytes or 32 bits) into $a1 to prevent overflow
-			li $v0, 8 # Read str from user
-			syscall
-		sw $ra, 0($sp) # Push return adr onto the stack
-		addi $sp, $sp, -4 # Move stack pointer   
-		# Go to sub-routines for lookup and conversion
-		jal init
+            #li $v0, 1               # print ascii int
+            #lb $a0, 0($t7)          # the first int of roman numerals
+            #syscall                 # call operating system
 
-		lw $ra, 0($sp) # Pop return adr off the stack
-		addi $sp, $sp, 4 # Move stack pointer
-		# Display results for the user
-		display:
-			# Load output str 1 to show the user their original input str
-			la $a0, outRecap # load contents of outRecap into $a0
-			li $v0, 4 # print str
-			syscall
+            #li $v0, 1               # print ascii int
+            #lb $a0, 1($t7)          # the second int of roman numerals
+            #syscall                 # call operating system
 
-		jal printPrompt
-		# Display the equivalent decimal value
-		la $a0, outFinal # load contents of outFinal (str) into $a0
-		li $v0, 4 # print str
-		syscall
+            #li $v0, 1               # print ascii int
+            #lb $a0, 2($t7)          # the third int of roman numerals
+            #syscall                 # call operating system
 
-		# Print the sum
-		lw $a0, sum # Load contents of sum into $a0
-		li $v0,1 # Print int
-		syscall
+            #li $v0, 1               # print ascii int
+            #lb $a0, 3($t7)          # the fourth int of roman numerals
+            #syscall                 # call operating system
 
-		# Ask the user whether they want to convert another Roman number (1 if YES; 2 if NO; default is NO)
-		la $a0, loopdriver # Load contents of loopdriver (str) into $a0
-		li $v0, 4 # Print str
-		syscall
+            #li $v0, 1               # print ascii int
+            #lb $a0, 4($t7)          # the fifth int of roman numerals
+            #syscall                 # call operating system
 
-		# Get user input from keyboard (1 = they want to convert another Roman number; 2 = Exit; default = 2)
-		li $v0, 5 # Read int input
-		syscall
+            #li $v0, 1               # print ascii int
+            #lb $a0, 5($t7)          # the sixth int of roman numerals
+            #syscall                 # call operating system
 
-		# Save the user's input and jump to "Exit"
-		sw $v0, convertAgain
-		lw $t0, convertAgain
+            #li $v0, 1               # print ascii int
+            #lb $a0, 6($t7)          # the seventh int of roman numerals
+            #syscall                 # call operating system           
 
-		bne $t0, 1, Exit # if the user enters a number != 1, go to Exit
-	
-		move $s0, $zero # Reinitialize
-		sw $zero, sum # Reinitialize
-		sw $zero, left # Reinitialize
+            
+            # prompt user for input 
 
-		j main # Go back to start if the user enters 1
-	printPrompt:
-		la $a0, prompt1 # Load adr
-		li $v0, 4 # Print prompt1
-		syscall	
-		jr $ra
+            li $v0, 4               # print string
+            la $a0, prompt          # set string
+            syscall                 # print string
 
-	# Convert Roman number str to int decimal value   
-	init:
-		#sw $ra, 4($sp)
-		sw $a1, 4($sp)
-		addi $sp, $sp, -4 # move stack pointer
+            li $v0, 8               # prompt for string
+            la $a0, inputString     # address for buffer
+            la $a1, 64              # size of buffer
+            syscall                 # get string
 
-		la $t2, input1 #Load the adr of the str (see by looking at starting index of each the length of each str
-		la $t3, roman # Load the adr of the roman lookup table into $t3
-		la $t4, values # Load the adr of the decimal lookup table into $t4
+            # find out how long the characters are
 
-		# Loop through each char of the input str
-		loop1:
-		lb $a0, ($t2) # This gets the next byte of the str (from L to R); change the offset to get others (i.e. lb $a0, 3($t0) = I
-		beq $a0, 10, return # If the ascii char == 0, we have reached the end of the input str; jump to "return"
-		beq $a0, 1, return # If the ascii char == 1, we've reached the "start of heading" (i.e. end of line; max = 12 char
-		#li $v0, 11 # print byte to console
-		#syscall
-		sw $ra, 8($sp) # Push return adr onto the stack
-		addi $sp, $sp, -4 # Move stack pointer
+            la $s0, inputString     # move string to register
+            li $t0, 0               # initialize counter
 
-		# While str[i] != null:
-		jal index
+lengloop:   add $s1, $s0, $t0       # $s1 contains string[i]
+            lb $a0, 0($s1)          # load the byte of interest
 
-		lw $ra, 8($sp) # Pop return adr off stack
-		addi $sp, $sp, 4 # Move stack pointer
+            # make sure this points to the register holding the SINGLE char
+            beq $a0, $zero, convert # reached end of string, stop counting
 
-		addi $t2, $t2, 1 # Move to next character in input str
+            addi $t0, $t0, 1        # increment counter (move onto next element)
+            j lengloop              # go back to beginning of loop 
 
-		sw $ra, 8($sp) # Push return adr onto the stack
-		addi $sp, $sp, -4 # Move stack pointer
+            # convert user input to Arabic numerals character by character
 
-		jal loop1 # iterate through loop1 again
+convert:    addi $t0, $t0, -1       # adjust counter
 
-		lw $ra, 8($sp) # Pop return adr off the stack
-		addi $sp, $sp, 4 # Move stack pointer
+            # convert char by char
 
-		# Find the index (i.e. offset) of the selected char in the "roman" lookup table
-	index:
-		lb $t5, ($t3) # Load the first byte of romans
-		beqz $t5, invalid # If we reach the end of romans && char !found, INVALID char
+charloop:   # $t0 contains the length of the string
+            # $s0 contains the string
+            # work backwards on the string
 
-		beq $a0, $t5, getVal # When char == element in romans table, branch to getVal to look it up in decimal table
+            add $s1, $s0, $t0       # $s1 contains string[i]
+            lb $t2, 0($s1)          # load the ascii value of interest
 
-		sw $ra, 12($sp) # Push return adr onto the stack
-		addi $sp, $sp, -4 # Move stack pointer
+            # is $t2 equal to 'q'? then exit program
+            addi $t1, $zero, 113    # load ascii value of 'q'
+            beq $t2, $t1, exit      # jump to exit
 
-		jal iter # If we haven't found a match, jump to where we can increment $t3 and iterate through the loop again
+            # which character is $s1? branches to find out
 
-		lw $ra, 12($sp) # Pop return adr off the stack
-		addi $sp, $sp, 4 # Move stack pointer
+            lb $t1, 0($t7)          # load I, 1, ascii 73
+            beq $t2, $t1, one       # it is a 1, jump to that
 
+            lb $t1, 1($t7)          # load V, 5, ascii 86
+            beq $t2, $t1, five      # it is a 5, jump to that
 
-		getVal:
-		la $t6, roman # Get the adr of the array containing Roman number characters
-		la $t7, values
+            lb $t1, 2($t7)          # load X, 10, ascii 88
+            beq $t2, $t1, ten       # it is a 10, jump to that
 
-		sub $t8, $t3, $t6 # Get the index value of the element that matches the byte we are working with [1:7]
-		add $t7, $t7, $t8
-		lbu $t9, ($t7) # $t9 is the decimal value that corresponds to the letter
-		bgeu $t9, 232, adjust1
+            lb $t1, 3($t7)          # load L, 50, ascii 76
+            beq $t2, $t1, fifty     # it is a 50, jump to that
 
-	j afterGV
-	adjust1:
+            lb $t1, 4($t7)          # load C, 100, ascii 67
+            beq $t2, $t1, hundred   # it is a 100, jump to that
 
-		seq $a2, $t5, 68 # If the character in question == D, set $a2 to 1; else, 0
-		mul $t9, $t9, $zero
-		beq $a2, 1, adjustD
-		addi $t9, $t9, 1000 # Char == M; decimal value = 1000
+            lb $t1, 5($t7)          # load D, 500, ascii 68
+            beq $t2, $t1, fivehun   # it is a 500, jump to that
 
-	j afterGV
-		adjustD: addi $t9, $t9, 500
-		j afterGV
-		afterGV: sw $ra, 16($sp)
-		addi $sp, $sp, -4 # move stack pointer
-	jal setup
-		addi $sp, $sp, 4 # reset the stack pointer
-		lw $ra, 16($sp) # Pop return adr off stack
-		# lw $t9, 12($sp) # fetch $t9
+            lb $t1, 6($t7)          # load M, 1000, ascii 77
+            beq $t2, $t1, thousand  # it is a 1000, jump to that
 
-		jr $ra # go back   
+            #if you're here, it means you didn't branch earlier
+            add $t5, $zero, $zero   # initialize comparison register
+            j next                  # not valid Roman numeral; skip to next loop
 
-		# This is the last part of the index loop
-	iter:   
-		addi $t3, $t3, 1 # if we haven't found a match, increment $t3 and iterate through the loop again
-		jal index # loop
-		# Prepare to compare current char w/previous char (i.e. if str is XI, compare I to X)
-		setup:
-		# Base case is that the str length == 1, and thus sum = the decimal equivalent of the only Roman number character
-		lw $s0, sum # Load sum into $s0
-		beqz $s0, base # If sum == 0, this is our first pass through the loop, and we just want to add the first char's decimal value to sum and return to get the next char
-		sw $ra, 20($sp) # Push return adr onto stack
-		addi $sp, $sp, -4 # Move stack pointer
+one:        addi $t6, $zero, 1      # load Arabic value in register
+            j oper                  # jump to addition/subtraction portion
 
-		jal calcSum # Jump to subroutine that calculates the sum
+five:       addi $t6, $zero, 5      # load Arabic value in register
+            j oper                  # jump to addition/subtraction portion
 
-		addi $sp, $sp, 4 # Reset the stack pointer
-		lw $ra, 20($sp) # Pop return adr off stack
-		jr $ra # Go back to return adr
+ten:        addi $t6, $zero, 10     # load Arabic value in register
+            j oper                  # jump to addition/subtraction portion
 
+fifty:      addi $t6, $zero, 50     # load Arabic value in register
+            j oper                  # jump to addition/subtraction portion
 
-		# Base case is our first pass through the loop, where sum == 0.
-		# We just want to add the value of the first number in the str to sum, and return to loop1 to get next char.
-		base: add $s0, $s0, $t9 # Add value of first char + 0 and store in $s0
-		sw $s0, sum # Store contents of $s0 in sum
-		sw $t9, left # Store contents of $t9 (i.e. current char) as "left" for use in next iteration
-		la $t3, roman # Load adr of roman array into $t3 (reset pointer)
-		addi $t2, $t2, 1 # Add 1 to $t2, so that we can select next char in input str
-		jal loop1 # Jump back to beginning of loop
-	# Compare current char to previous, and calculate sum accordingly, per rules of Roman numbers
-	calcSum: addi $sp, $sp, 8 # Reset the stack pointer
-		lw $t1, left # Pop the decimal value of the Roman number to the left of the current value in the original str   
-		sw $t9, left # Reset left pointer so it points to current char ("left" of *next* char)
+hundred:    addi $t6, $zero, 100    # load Arabic value in register
+            j oper                  # jump to addition/subtraction portion
 
-		la $t3, roman # Load adr of roman array into $t3 (reset pointer)
-		bge $t1, $t9, plus # If value of the previous char >= current char, then add the current char's value to the sum
-		blt $t1, $t9, minus # If the previous char in the str is < the current char, add: current - (2*previous) to the sum
+fivehun:    addi $t6, $zero, 500    # load Arabic value in register
+            j oper                  # jump to addition/subtraction portion
 
-	plus: lw $s0, sum # Load sum into $s0
-		add $s0, $s0, $t9 # Add current char's decimal value to sum
-		sw $s0, sum # Store the result in sum
+thousand:   addi $t6, $zero, 1000   # load Arabic value in register
+            j oper                  # jump to addition/subtraction portion
 
-		la $t3, roman # Load adr of roman array into $t3 (reset pointer)
-		addi $t2, $t2, 1 # Add 1 to $t2, so that we can select next char in input str
+oper:       # determine whether the value needs to be added or subtracted,
+            # and then do the operation
 
-		jal loop1 # Jump back to beginning of loop
+            # if current value is lower than previous value, subtract!
+            blt $t6, $t5, subtract
 
-	minus: lw $s0, sum # Load sum into $s0
-		mul $t1, $t1, 2 # Multiply $1 by 2 (need to subtract twice, to get a net impact of -1 * $t1)
-		sub $t9, $t9, $t1 # Subtract (previous char - (2* current char)) (i.e. if XIV, do 11 + (5-(2*1)) = 14)
-		add $s0, $s0, $t9 # Add this result to the existing sum
-		sw $s0, sum # Store the result in sum   
-		la $t3, roman # Load adr of roman array into $t3 (reset pointer)
-		addi $t2, $t2, 1 # Add 1 to $t2, so that we can select next char in input str
-		jal loop1 # Jump back to beginning of loop
-	# Go back to main   
-	return:
-		sw $s0, sum # Store sum
-		j display # Jump to display to print output for the user
+            # otherwise, just add the new value to total
+            add $s7, $s7, $t6
+            j next
 
-	#Exception handling: User input str contains invalid character(s)
-	invalid:
-		li $v0, 4 # Print str
-		la $a0, error1 # Load adr for error1 (a str)
-		syscall
-		j main
-	#System Exit
-	Exit:
-		# Display exit message
-		li $v0, 4 # Print str
-		la $a0, stop # Load adr for stop (a str)
-		syscall
-		li $v0, 10 # System exit
-		syscall
+subtract:   sub $s7, $s7, $t6
+
+next:       # make sure this points to the register holding the SINGLE char
+            beq $t0, $zero, print   # reached start of string, exit
+
+            move $t5, $t6           # store current value for next loop
+            addi $t0, $t0, -1       # decrement (move to preceding element)
+            j charloop              # go back to beginning of loop
+
+print:      li $v0, 4               # print string
+            la $a0, output          # the text for output
+            syscall                 # call operating system       
+
+            li $v0, 1               # print calculated Arabic integer
+            move $a0, $s7           # the calculated Arabic integer
+            syscall                 # call operating system
+
+            # loop; continue program
+            j main
+
+exit:       li $v0, 4               # print string
+            la $a0, stopped         # the text for stopped
+            syscall                 # call operating system
+
+            li $v0, 10              # finished .. stop .. return
+            syscall                 # to the Operating System
+
+            .data
+inputString:
+            .space 64
+romans:     .asciiz "IVXLCDM"
+prompt:     .asciiz "\nPlease enter Roman numerals in capital letters to convert to Arabic numerals, or the lower-case letter 'q' to exit the program:\n"
+output:     .asciiz "The number you entered was "
+stopped:    .asciiz "\nStopped.\n"
