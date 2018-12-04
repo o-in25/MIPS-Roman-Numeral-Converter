@@ -8,6 +8,7 @@
 	# decimal, as romanNumeral[i] will dictate decimalNumeral[i]
 	decimalNumeral: .word 1000 100 50 10 5 1 # the decimal map
 	romanNumeral: .asciiz "MDCLXVI" # the roman map
+	buffer: .word 4
 	
 	# Request the user for a roman numeral.
 	req: .asciiz "Roman Numeral: "
@@ -19,14 +20,25 @@
 	.globl main
 			main:
 				getRequest:
+					# Per MIPS documentation, $a0 is 
+					# the address of null-terminated string to print - 
+					# in this case, it is our request prompt to the user.
 					li $v0, 4
-					la $a0, req # Load the request
+					# Load the request.
+					la $a0, req
+					# Issue the syscall - the request to the kernel.
 					syscall
 				loadRequest:
 					# Per the MIPS documentation,
-					# $a0 is the address of input buffer and
+					# $a0 is the address of an input buffer and
 					# $a1 is the maximum number of characters to read. 
-					la $a0, 
+					la $a0, buffer
+					# Set the maximum number of characters to be 32 bits
+					# i.e. one word
+					li $a1, 32
+					li $v0, 8 # Read str from user
+					# Issue the syscall - the request to the kernel.
+					syscall
 				
 				jal conversion
 			conversion:
