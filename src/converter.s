@@ -42,6 +42,15 @@
 				
 				jal conversion
 			conversion:
-				la 
+				# Then load the address of the buffer for the user input,
+				# the array for the roman numeral, and array 
+				# for the decimal numeral.
+				la $t0, buffer
+				# the roman numeral array
+				la $t1, romanNumeral
+				# The decimal numeral array. 
+				la $t2, decimalNumeral
+				
+				 
 			
 	
