@@ -85,13 +85,6 @@
 		syscall	
 		jr $ra
 
-
-
-
-
-
-
-
 	# Convert Roman number str to int decimal value   
 	init:
 		#sw $ra, 4($sp)
@@ -106,12 +99,9 @@
 		loop1:
 		lb $a0, ($t2) # This gets the next byte of the str (from L to R); change the offset to get others (i.e. lb $a0, 3($t0) = I
 		beq $a0, 10, return # If the ascii char == 0, we have reached the end of the input str; jump to "return"
-		beq $a0, 1, return # If the ascii char == 1, we've reached the "start of heading" (i.e. end of line; max = 12 char)
-
+		beq $a0, 1, return # If the ascii char == 1, we've reached the "start of heading" (i.e. end of line; max = 12 char
 		#li $v0, 11 # print byte to console
 		#syscall
-
-
 		sw $ra, 8($sp) # Push return adr onto the stack
 		addi $sp, $sp, -4 # Move stack pointer
 
@@ -167,13 +157,9 @@
 	j afterGV
 		adjustD: addi $t9, $t9, 500
 		j afterGV
-
 		afterGV: sw $ra, 16($sp)
 		addi $sp, $sp, -4 # move stack pointer
-
-
 	jal setup
-
 		addi $sp, $sp, 4 # reset the stack pointer
 		lw $ra, 16($sp) # Pop return adr off stack
 		# lw $t9, 12($sp) # fetch $t9
@@ -184,7 +170,6 @@
 	iter:   
 		addi $t3, $t3, 1 # if we haven't found a match, increment $t3 and iterate through the loop again
 		jal index # loop
-
 		# Prepare to compare current char w/previous char (i.e. if str is XI, compare I to X)
 		setup:
 		# Base case is that the str length == 1, and thus sum = the decimal equivalent of the only Roman number character
@@ -205,13 +190,9 @@
 		base: add $s0, $s0, $t9 # Add value of first char + 0 and store in $s0
 		sw $s0, sum # Store contents of $s0 in sum
 		sw $t9, left # Store contents of $t9 (i.e. current char) as "left" for use in next iteration
-
 		la $t3, roman # Load adr of roman array into $t3 (reset pointer)
 		addi $t2, $t2, 1 # Add 1 to $t2, so that we can select next char in input str
-
 		jal loop1 # Jump back to beginning of loop
-
-
 	# Compare current char to previous, and calculate sum accordingly, per rules of Roman numbers
 	calcSum: addi $sp, $sp, 8 # Reset the stack pointer
 		lw $t1, left # Pop the decimal value of the Roman number to the left of the current value in the original str   
@@ -249,8 +230,6 @@
 		la $a0, error1 # Load adr for error1 (a str)
 		syscall
 		j main
-
-
 	#System Exit
 	Exit:
 		# Display exit message
