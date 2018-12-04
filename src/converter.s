@@ -50,6 +50,10 @@
 				la $t1, romanNumeral
 				# The decimal numeral array. 
 				la $t2, decimalNumeral
+				# Loop for each character in the input string
+				forEachCharInInput:
+					
+					
 				
 				 
 			
