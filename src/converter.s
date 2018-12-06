@@ -3,14 +3,12 @@
 	entryPrompt: .asciiz "\nEnter Roman Numerals or 0 to quit: \n"
 	exitPrompt: .asciiz "\So long, and thanks for all the fish\n"
 	output: .asciiz "Arabic Numeral:  "
-	input: .space 64
-	romanNumeralList: .asciiz "IVXLCDM"
+	input: .word 64 # 2 words - just in case
+
 		
 .text 
 	.globl main
 		main:                               
-
-
             		# Prints the prompt for the user to enter a 
            		# Roman numeral. The operation will support both 
            		# upper and lower case numerals, as documented below. Per the 
@@ -36,14 +34,9 @@
             			move $a1, $a0 # maximum number of characters to read - the same as the input string 
             			li $v0, 8 # prompt for string
             			syscall # make a syscall to the kernel
-
-            		# find out how long the characters are
-
-
             		move $s0, $a0 # the $a0 register will contain the user input
            		add $s7, $0, $0 # initialize the $s7 register - it will be used later
            		li $t0, 0 # the index of the input length loop - used to find the length of the input string =
-            		la $t7, romanNumeralList # load the roman numeral list (i.e. the string) now, while we are in main
 			
 			# Get the length of the input string by looping 
 			# through each character until we reach the end of 
@@ -58,21 +51,17 @@
 			# and keep looping through the string
 			increment:
 				addi $t0, $t0, 1 # increment the index
-				j getInputLength
+				j getInputLength # go back to the loop
 
 
            		# convert char by char
 			charloop:   
-			
 				# $t0 contains the length of the string
             			# $s0 contains the string
            			# work backwards on the string
-            			add $s1, $s0, $t0       # $s1 contains string[i]
-            			add $t2, $0, $0
-            			lb $t2, 0($s1)          # load the ascii value of interest
-
+            			addu $s1, $s0, $t0 # get the input string at character i
+            			lbu $t2, 0($s1)  # load the character as a byte, per MIPS documentationt
            			# is $t2 equal to 'q'? then exit program
-
            			add $t1, $0, $0
             			addi $t1, $0, 48    # load ascii value of 'q'
             			beq $t2, $t1, exit      # jump to exit
