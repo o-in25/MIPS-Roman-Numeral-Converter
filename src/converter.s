@@ -9,23 +9,11 @@
 	.globl main
 		main:                               # convert roman numerals to arabic numerals
          
-            		# initialize registers that we use
-          		#add $t0, $zero, $zero
-            		#add $t1, $zero, $zero
-            		#add $t2, $zero, $zero
-            		#add $t5, $zero, $zero
-            		#add $t6, $zero, $zero
-            		#add $t7, $zero, $zero
-            		add $s0, $zero, $zero
-            		add $s1, $zero, $zero
-            		add $s7, $zero, $zero
+
 
             		# populate $t7 with an array containing the Roman numerals
-
             		la $t7, romans
-            
             		# prompt user for input 
-
             		li $v0, 4               # print string
            		la $a0, prompt          # set string
            		syscall                 # print string
@@ -37,9 +25,11 @@
 
             		# find out how long the characters are
 
+
             		la $s0, inputString     # move string to register
             		add $t0, $0, $0
            		li $t0, 0               # initialize counter
+           		add $s7, $0, $0
 
 			lengloop:   
 				add $s1, $s0, $t0       # $s1 contains string[i]
