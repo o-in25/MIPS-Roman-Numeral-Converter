@@ -9,9 +9,15 @@
 .text 
 	.globl main
 		main:                               
-            		# populate $t7 with an array containing the Roman numerals
 
-            		#$a0 = integer to print
+
+            		# Prints the prompt for the user to enter a 
+           		# Roman numeral. The operation will support both 
+           		# upper and lower case numerals, as documented below. Per the 
+           		# MIPS documentation, $a0 will conatin the address of 
+           		# null-terminated string to print (i.e. asciiz). Then, make a request 
+           		# to the OS kernel with  a syscall by placing the value 4 in the $v0 register to read 
+            		# the string.
             		promptInput:
            			la $a0, entryPrompt # set string
            			li $v0, 4 # print string
@@ -24,7 +30,7 @@
             		# In this case, the maximum number of characters to read will 
             		# simply be 2 words. Then, make a request to the OS kernel with 
             		# a syscall by placing the value 8 in the $v0 register to read 
-            		# the string 
+            		# the string.
             		getInput:
             			la $a0, input # the address of input buffer (string)
             			move $a1, $a0 # maximum number of characters to read - the same as the input string 
@@ -34,9 +40,8 @@
             		# find out how long the characters are
 
 
-            		move $s0, $a0     # move string to register
-            		add $t0, $0, $0
-           		add $s7, $0, $0
+            		move $s0, $a0 # the $a0 register will contain the user input
+           		add $s7, $0, $0 # initialize the $s7 register - it will be used later
            		li $t0, 0 # the index of the input length loop - used to find the length of the input string =
             		la $t7, romanNumeralList # load the roman numeral list (i.e. the string) now, while we are in main
 			
