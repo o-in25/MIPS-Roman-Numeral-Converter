@@ -13,8 +13,8 @@
           		#add $t0, $zero, $zero
             		#add $t1, $zero, $zero
             		#add $t2, $zero, $zero
-            		add $t5, $zero, $zero
-            		add $t6, $zero, $zero
+            		#add $t5, $zero, $zero
+            		#add $t6, $zero, $zero
             		add $t7, $zero, $zero
             		add $s0, $zero, $zero
             		add $s1, $zero, $zero
@@ -45,7 +45,7 @@
 				add $s1, $s0, $t0       # $s1 contains string[i]
             			lb $a0, 0($s1)          # load the byte of interest
             			# make sure this points to the register holding the SINGLE char
-            			beq $a0, $zero, convert # reached end of string, stop counting
+            			beq $a0, $0, convert # reached end of string, stop counting
             			addi $t0, $t0, 1        # increment counter (move onto next element)
             			j lengloop              # go back to beginning of loop 
 
@@ -70,12 +70,11 @@
 
             		# which character is $s1? branches to find out
 
-		
+		        add $t6, $0, $0
             		addi $t1, $0, 73         # load I, 1, ascii 73
             		beq $t2, $t1, one       # it is a 1, jump to that
 	    		addi $t1, $0, 105         # load I, 1, ascii 73
             		beq $t2, $t1, one       # it is a 1, jump to that
-		
 		
             		addi $t1, $0, 86          # load V, 5, ascii 86
             		beq $t2, $t1, five      # it is a 5, jump to that
@@ -108,28 +107,28 @@
             		beq $t2, $t1, thousand  # it is a 1000, jump to that
 
             		#if you're here, it means you didn't branch earlier
-            		add $t5, $zero, $zero   # initialize comparison register
+            		add $t5, $0, $0   # initialize comparison register
             		j next                  # not valid Roman numeral; skip to next loop
 			one:      
-				addi $t6, $zero, 1      # load Arabic value in register
+				addi $t6, $0, 1      # load Arabic value in register
             			j oper                  # jump to addition/subtraction portion
 			five:       
-				addi $t6, $zero, 5      # load Arabic value in register
+				addi $t6, $0, 5      # load Arabic value in register
             			j oper                  # jump to addition/subtraction portion
 			ten:        
-				addi $t6, $zero, 10     # load Arabic value in register
+				addi $t6, $0, 10     # load Arabic value in register
             			j oper                  # jump to addition/subtraction portion
 			fifty:      
-				addi $t6, $zero, 50     # load Arabic value in register
+				addi $t6, $0, 50     # load Arabic value in register
             			j oper                  # jump to addition/subtraction portion
 			hundred:   
-				addi $t6, $zero, 100    # load Arabic value in register
+				addi $t6, $0, 100    # load Arabic value in register
             			j oper                  # jump to addition/subtraction portion
 			fivehun:    
-				addi $t6, $zero, 500    # load Arabic value in register
+				addi $t6, $0, 500    # load Arabic value in register
             			j oper                  # jump to addition/subtraction portion
 			thousand:   
-				addi $t6, $zero, 1000   # load Arabic value in register
+				addi $t6, $0, 1000   # load Arabic value in register
             			j oper                  # jump to addition/subtraction portion
 
 		oper:       
@@ -144,7 +143,7 @@
 		subtract:   sub $s7, $s7, $t6
 
 		next:       # make sure this points to the register holding the SINGLE char
-            		beq $t0, $zero, print   # reached start of string, exit
+            		beq $t0, $0, print   # reached start of string, exit
             		move $t5, $t6           # store current value for next loop
             		addi $t0, $t0, -1       # decrement (move to preceding element)
             		j charloop              # go back to beginning of loop
