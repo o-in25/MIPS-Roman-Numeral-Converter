@@ -36,30 +36,30 @@
             			syscall # make a syscall to the kernel
             		move $s0, $a0 # the $a0 register will contain the user input
            		add $s7, $0, $0 # initialize the $s7 register - it will be used later
-           		li $t0, 0 # the index of the input length loop - used to find the length of the input string =
+           		li $s3, 0 # the index of the input length loop - used to find the length of the input string 
 			
 			# Get the length of the input string by looping 
 			# through each character until we reach the end of 
 			# the input string. 
 			getInputLength:
-				addu $s1, $s0, $t0 # get the input string at character i
+				addu $s1, $s0, $s3 # get the input string at character i
             			lbu $a0, 0($s1) # load the character as a byte, per MIPS documentation
             			bne $a0, $0, increment # the null character is defined as 0 - per ASCII documentation; if the character is 0, the end of the string has been reached
-            			j charloop # the end has been reach, continue on
+            			j traverseInputString # the end has been reach, continue on
 			
 			# Increment the index counter by 1,
 			# and keep looping through the string
 			increment:
-				addi $t0, $t0, 1 # increment the index
+				addi $s3, $s3, 1 # increment the index
 				j getInputLength # go back to the loop
 
            		# Once the length of the entered user string is computed,
            		# we will work at character n, then n-1, decrementing until character 0. From the previous
-           		# subroutines, $t0 will hold the string length, and the $s0 will contain the 
+           		# subroutines, $s3 will hold the string length, and the $s0 will contain the 
            		# string itself. If the next character is 0, this signifies user termination, and thus the program will enter 
            		# its exit routine and will terminate. 
-			charloop:  
-            			addu $s1, $s0, $t0 # add the length of the string into $s1
+			traverseInputString:  
+            			addu $s1, $s0, $s3 # add the length of the string into $s1
             			lbu $t2, 0($s1)  # load the character as a byte, per MIPS documentation, beggining at the nth character 
             			addi $t1, $0, 48 # load ASCII value of the character of 0 - a well known constant found in the ASCII documentation	
             			move $s6, $t1 # move the ASCII character into a peristent register 
@@ -76,7 +76,7 @@
 			# allow for the user to enter both upper and lowercase Roman Numerals. This design was inspired by the "pass up or die" pattern 
 			# studied this semester.
 			mapCharacters:
-				add $s2, $0, $0 # the $t0 register is initalized - it will be used later 
+				add $s2, $0, $0 # the $s3 register is initalized - it will be used later 
 				# If the character is passed down to the sixty series, its ASCII character is then checked 
 				# if it is > 69. If so, it is passed down further to the next series. Else, it 
 				# lies between 60-69.
@@ -131,7 +131,7 @@
 			#if you're here, it means you didn't branch earlier
             		addi $s4, $0, 0   # initialize comparison register
             		jal continue # not valid Roman numeral; skip to next loop
-            		j charloop
+            		j traverseInputString
 			
 		
 			# Handles the conversion for the corresponding character. Since the mapCharacters function will dispatch 
@@ -144,90 +144,98 @@
 				# corresponding Arabic character is 1000
 				conversionToThousandHandler:   
 					addi $s2, $0, 1000 # load the corresponding value 
-            				j oper                  # jump to addition/subtraction portion
+            				jal prefixHandler # not valid Roman numeral; skip to next loop
+            				j traverseInputString                  # jump to addition/subtraction portion
 				# When the branch is jumped to this memory location, the 
 				# corresponding Arabic character is 500
 				conversionToFiveHundredHandler:    
 					addi $s2, $0, 500 # load the corresponding value 
-            				j oper                  # jump to addition/subtraction portion
+            				jal prefixHandler # not valid Roman numeral; skip to next loop
+            				j traverseInputString              # jump to addition/subtraction portion
 				# When the branch is jumped to this memory location, the 
 				# corresponding Arabic character is 100
 				conversionToHundredHandler:   
 					addi $s2, $0, 100 # load the corresponding value 
-            				j oper                  # jump to addition/subtraction portion
+            				jal prefixHandler # not valid Roman numeral; skip to next loop
+            				j traverseInputString                # jump to addition/subtraction portion
 				# When the branch is jumped to this memory location, the 
 				# corresponding Arabic character is 50
 				conversionToFiftyHandler:      
 					addi $s2, $0, 50 # load the corresponding value 
-            				j oper                  # jump to addition/subtraction portion
+            				jal prefixHandler # not valid Roman numeral; skip to next loop
+            				j traverseInputString                 # jump to addition/subtraction portion
 				# When the branch is jumped to this memory location, the 
 				# corresponding Arabic character is 10
 				conversionToTenHandler:        
 					addi $s2, $0, 10 # load the corresponding value 
-            				j oper                  # jump to addition/subtraction portion
+            				jal prefixHandler # not valid Roman numeral; skip to next loop
+            				j traverseInputString           # jump to addition/subtraction portion
 				# When the branch is jumped to this memory location, the 
 				# corresponding Arabic character is 5
 				conversionToFiveHandler:       
 					addi $s2, $0, 5 # load the corresponding value 
-            				j oper                  # jump to addition/subtraction portion
+					jal prefixHandler # not valid Roman numeral; skip to next loop
+            				j traverseInputString
 				# When the branch is jumped to this memory location, the 
 				# corresponding Arabic character is 1	
 				conversionToOneHandler:      
 					addi $s2, $0, 1 # load the corresponding value 
-            				j oper                  # jump to addition/subtraction portion
+            				jal prefixHandler # not valid Roman numeral; skip to next loop
+            				j traverseInputString
 
 
-		
-		
-		
-		oper:       
-			# determine whether the value needs to be added or subtracted,
-			# and then do the operation
-            		# if current value is lower than previous value, subtract!
-            		blt $s2, $s4, subtract
-            		# otherwise, just add the new value to total
-            		add $s7, $s7, $s2
-            		j next
-            		beq $t0, $0, print   # reached start of string, exit
-            		move $s4, $s2          # store current value for next loop
-            		addi $t0, $t0, -1       # decrement (move to preceding element)
-            		j charloop              # go back to beginning of loop
-
-		subtract:   sub $s7, $s7, $s2
-
-
+		# The final handler will take the values in the $s2 and $s4 register and will determine 
+		# whether or not to subtract or add the next character. If the next character is larger than
+		# the previous character, it is subtracted from the original. If it is larger, it is added.
+		# When the proper prefix calculation is complete, the program jumps to the continue function,
+		# which will move the current value into the $s4 register so that this handler may operate again 
+		# on the n-1th character.
+		prefixHandler:
+			# Check for addition
+			performAddition:       
+            			blt $s2, $s4, performSubtraction # The case where the next string is larger than the previous will cause a branch
+            			add $s7, $s7, $s2 # The next string is larger, perform addition 
+            			j continue # jump to the continue function
+			# Check for subtraction
+			performSubtraction:   
+				sub $s7, $s7, $s2 # The next string is smaller, perform subtraction 
+				
+				j continue # jump to the continue function
+		# Finally, the continur function simply dictates the control flow of the loop. If the null character
+		# is reached, (i.e. 0), then the final value is printed and the program will accept new user 
+		# input until 0 is enetered. Should there be remaining characters, the index of the character 
+		# loop is decremented - since the loop begins at character n - the current valu of the digit stored 
+		# in $s2 is moved to $s4 to be reused, and the register jumps to the previously stored PC value in 
+		# the $ra register. 
 		continue:
-			beq $t0, $0, print   # reached start of string, exit
-            		move $s4, $s2          # store current value for next loop
-            		addi $t0, $t0, -1       # decrement (move to preceding element)
-            		jr $ra              # go back to beginning of loop
-            		
-         
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		print:      
-			li $v0, 4               # print string
-            		la $a0, output          # the text for output
-            		syscall                 # call operating system       
+			beq $s3, $0, print # the null character is defined as 0 - when we reach it, we exit
+            		addi $s3, $s3, -1 # decrement the index of the character loop - used to find the length of the input string 
+            		move $s4, $s2 # save the current value in a persistent register
+            		jr $ra # return to where we came from
+            	
+		# Prints the converted Arabic numeral. Per the MIPS documenttion, $a0 will conatin the 
+		# address of null-terminated string to print (i.e. asciiz). Here, since the converted 
+		# Arabic number is stored in the $s7 register, it must first be moved to $a0. Then, make a request 
+           	# to the OS kernel with  a syscall by placing the value 1 in the $v0 register to read 
+            	# the string. Finally, since the print funciton can only be reached if the user entered a non-terminating 
+            	# character, in this case 0, it will jump back to main
+		print:     
+            		move $a0, $s7 # the calculated conversion must be placed in the $a0 register to issue a syscal
+            		li $v0, 1 # print string
+           		syscall # make a syscall to the kernel 
+            		j main # loop again until the user dictates otherwise
 
-            		li $v0, 1               # print calculated Arabic integer
-            		move $a0, $s7           # the calculated Arabic integer
-            		syscall                 # call operating system
-
-            		# loop; continue program
-            		j main
-
+		# When this labeled is reached, the user has entered a terminating character - in this case, 0.
+		# The $a0 register will conatin the address of 
+           	# null-terminated string to print - in this case a simple goodbye message to signify that the process has
+           	# indeed ceased. Then, make a request 
+           	# to the OS kernel with  a syscall by placing the value 4 in the $v0 register to read 
+            	# the string. Finally, another request 
+           	# to the OS kernel is made with a syscall by placing the value 10 in the $v0 register to terminate 
+           	# the running program.
 		exit:      
-			li $v0, 4               # print string
-            		la $a0, exitPrompt         # the text for stopped
-            		syscall                 # call operating system
-            		li $v0, 10              # finished .. stop .. return
-            		syscall                 # to the Operating System
+			li $v0, 4 # print goodbye - to signify exit
+            		la $a0, exitPrompt # the text for stopped
+            		syscall # make a syscall to the kernel
+            		li $v0, 10 # terminate the program
+            		syscall # make a syscall to the kernel 
