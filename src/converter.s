@@ -70,54 +70,64 @@
 			# Here, this relation will serve as a "pseudo map" data structure, where there wll exist a injective funtion 
 			# between each entered character and its corresponding ASCII character. Therefore, no two  characters will share the same 
 			# Roman numeral mapping. Here, the $s6 register will contain the well-known ASCII character. The mapCharacters funtion will
-			# "pass down" the character according to which ASCII series range it lies in. This is done for performance purposes, since
-			# this "pesudo-map" behaves more like a switch statement, and cannot be done in O(1) time, but O(n). Additionally, the map will
-			# allow for the user to enter both upper and lowercase Roman Numerals.
+			# "pass down" the character according to which ASCII series range it lies in. (This is done for performance purposes, since
+			# this "pesudo-map" behaves more like a switch statement, and cannot be done in O(1) time, but O(n)). If the 
+			# entered user character matches a corresponding ASCII key, it is then branched to that handler. Additionally, the map will
+			# allow for the user to enter both upper and lowercase Roman Numerals. This design was inspired by the "pass up or die" pattern 
+			# studied this semester.
 			mapCharacters:
 				add $t6, $0, $0 # the $t0 register is initalized - it will be used later 
 				# If the character is passed down to the sixty series, its ASCII character is then checked 
 				# if it is > 69. If so, it is passed down further to the next series. Else, it 
 				# lies between 60-69.
 				sixtySeries:
-					bge $s6, 70, seventySeries
-            				li $t1, 67          # load C, 100, ascii 67
-            				beq $t2, $t1, hundred   # it is a 100, jump to that
-            				li $t1, 68          # load D, 500, ascii 68
-            				beq $t2, $t1, fivehun   # it is a 500, jump to that
-            			
+					bge $s6, 70, seventySeries # pass it down to the next series 
+            				li $t1, 67 # ASCII 67 corresponds C and is loaded into $t1
+            				beq $t2, $t1, hundred # advance to the conversion handler for 100 in arabic
+            				li $t1, 68 # ASCII 68 corresponds D and is loaded into $t1
+            				beq $t2, $t1, fivehun # advance to the conversion handler for 500 in arabic
+            			# If the character is passed down to the seventy series, its ASCII character is then checked 
+				# if it is > 79. If so, it is passed down further to the next series. Else, it 
+				# lies between 70-79.
 				seventySeries:
-					bge $s6, 80, eightySeries
-            				li $t1, 73         # load I, 1, ascii 73
-            				beq $t2, $t1, one       # it is a 1, jump to that
-            				addi $t1, $0, 76          # load L, 50, ascii 76
-            				beq $t2, $t1, fifty     # it is a 50, jump to that
-            				li $t1, 77          # load M, 1000, ascii 77
-            				beq $t2, $t1, thousand  # it is a 1000, jump to that
-	    		
+					bge $s6, 80, eightySeries # pass it down to the next series 
+            				li $t1, 73 # ASCII 73 corresponds I and is loaded into $t1
+            				beq $t2, $t1, one # advance to the conversion handler for 1 in arabic
+            				addi $t1, $0, 76 # ASCII 76 corresponds L and is loaded into $t1
+            				beq $t2, $t1, fifty # advance to the conversion handler for 50 in arabic
+            				li $t1, 77 # ASCII 77 corresponds M and is loaded into $t1
+            				beq $t2, $t1, thousand # advance to the conversion handler for 1000 in arabic
+	    			# If the character is passed down to the eighty series, its ASCII character is then checked 
+				# if it is > 89. If so, it is passed down further to the next series. Else, it 
+				# lies between 80-89.
 				eightySeries:     
-					bge $s6, 90, nintySeries  
-					li $t1, 86          # load V, 5, ascii 86
-            				beq $t2, $t1, five      # it is a 5, jump to that
-            				li $t1, 88          # load X, 10, ascii 88
-            				beq $t2, $t1, ten       # it is a 10, jump to that
-           			nintySeries:
-           				bge $s6, 100, hundredSeries  
-           				li $t1, 99          # load C, 100, ascii 67
-            				beq $t2, $t1, hundred   # it is a 100, jump to that
-            				
+					bge $s6, 90, ninetySeries # pass it down to the next series 
+					li $t1, 86 # ASCII 86 corresponds V and is loaded into $t1
+            				beq $t2, $t1, five # advance to the conversion handler for 5 in arabic
+            				li $t1, 88 # ASCII 88 corresponds X and is loaded into $t1
+            				beq $t2, $t1, ten # advance to the conversion handler for 10 in arabic
+            			# If the character is passed down to the ninety series, its ASCII character is then checked 
+				# if it is > 99. If so, it is passed down further to the next series. Else, it 
+				# lies between 90-99.
+           			ninetySeries:
+           				bge $s6, 100, hundredSeries  # pass it down to the next series  
+           				li $t1, 99 # ASCII 99 corresponds c and is loaded into $t1
+            				beq $t2, $t1, hundred # advance to the conversion for 100 in arabic
+            			# If the character is passed down to the hundred series, there are no futher
+            			# possible ASCII candidates - and thus resides here. 
            			hundredSeries:
-           				li $s6, 100          # load D, 500, ascii 68
-            				beq $t2, $t1, fivehun   # it is a 500, jump to that
-            				li $t1, 105         # load I, 1, ascii 73
-            				beq $t2, $t1, one       # it is a 1, jump to that
-            				li $t1, 109          # load M, 1000, ascii 77
-            				beq $t2, $t1, thousand  # it is a 1000, jump to tha
-            				li $t1, 108          # load L, 50, ascii 76
-            				beq $t2, $t1, fifty     # it is a 50, jump to thatt
-            				li $t1, 118          # load V, 5, ascii 86
-            				beq $t2, $t1, five      # it is a 5, jump to that
-            				li $t1, 120          # load X, 10, ascii 88
-           				beq $t2, $t1, ten       # it is a 10, jump to that
+           				li $s6, 100 # ASCII 100 corresponds d and is loaded into $t1
+            				beq $t2, $t1, fivehun # advance to the conversion for 500 in arabic
+            				li $t1, 105 # ASCII 105 corresponds i and is loaded into $t1
+            				beq $t2, $t1, one # advance to the conversion for 1000 in arabic
+            				li $t1, 108 # ASCII 108 corresponds l and is loaded into $t1
+            				beq $t2, $t1, fifty # advance to the conversion for 1 in arabic
+            				li $t1, 109 # ASCII 109 corresponds m and is loaded into $t1
+            				beq $t2, $t1, thousand # advance to the conversion for 50 in arabic
+            				li $t1, 118 # ASCII 118 corresponds v and is loaded into $t1
+            				beq $t2, $t1, five # advance to the conversion for 5 in arabic
+            				li $t1, 120 # ASCII 120 corresponds x and is loaded into $t1
+           				beq $t2, $t1, ten # advance to the conversion for 10 in arabic
 
             		
 
