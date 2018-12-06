@@ -128,15 +128,11 @@
             				beq $t2, $t1, five # advance to the conversion for 5 in arabic
             				li $t1, 120 # ASCII 120 corresponds x and is loaded into $t1
            				beq $t2, $t1, ten # advance to the conversion for 10 in arabic
-
-            		
-
-            			
-
-				
-            		#if you're here, it means you didn't branch earlier
+			#if you're here, it means you didn't branch earlier
             		add $t5, $0, $0   # initialize comparison register
-            		j next                  # not valid Roman numeral; skip to next loop
+            		j next # not valid Roman numeral; skip to next loop
+			
+			
 			one:      
 				addi $t6, $0, 1      # load Arabic value in register
             			j oper                  # jump to addition/subtraction portion
