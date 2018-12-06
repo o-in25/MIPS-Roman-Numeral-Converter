@@ -15,7 +15,7 @@
             		#add $t2, $zero, $zero
             		#add $t5, $zero, $zero
             		#add $t6, $zero, $zero
-            		add $t7, $zero, $zero
+            		#add $t7, $zero, $zero
             		add $s0, $zero, $zero
             		add $s1, $zero, $zero
             		add $s7, $zero, $zero
