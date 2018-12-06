@@ -10,7 +10,7 @@
 		main:                               # convert roman numerals to arabic numerals
          
             		# initialize registers that we use
-          		add $t0, $zero, $zero
+
             		add $t1, $zero, $zero
             		add $t2, $zero, $zero
             		add $t5, $zero, $zero
@@ -27,6 +27,7 @@
             		# prompt user for input 
 
             		li $v0, 4               # print string
+            		add $t0, $0, $0
            		la $a0, prompt          # set string
            		syscall                 # print string
 
@@ -106,61 +107,60 @@
             		#if you're here, it means you didn't branch earlier
             		add $t5, $zero, $zero   # initialize comparison register
             		j next                  # not valid Roman numeral; skip to next loop
+			one:      
+				addi $t6, $zero, 1      # load Arabic value in register
+            			j oper                  # jump to addition/subtraction portion
+			five:       
+				addi $t6, $zero, 5      # load Arabic value in register
+            			j oper                  # jump to addition/subtraction portion
+			ten:        
+				addi $t6, $zero, 10     # load Arabic value in register
+            			j oper                  # jump to addition/subtraction portion
+			fifty:      
+				addi $t6, $zero, 50     # load Arabic value in register
+            			j oper                  # jump to addition/subtraction portion
+			hundred:   
+				addi $t6, $zero, 100    # load Arabic value in register
+            			j oper                  # jump to addition/subtraction portion
+			fivehun:    
+				addi $t6, $zero, 500    # load Arabic value in register
+            			j oper                  # jump to addition/subtraction portion
+			thousand:   
+				addi $t6, $zero, 1000   # load Arabic value in register
+            			j oper                  # jump to addition/subtraction portion
 
-one:        addi $t6, $zero, 1      # load Arabic value in register
-            j oper                  # jump to addition/subtraction portion
+		oper:       
+			# determine whether the value needs to be added or subtracted,
+			# and then do the operation
+            		# if current value is lower than previous value, subtract!
+            		blt $t6, $t5, subtract
+            		# otherwise, just add the new value to total
+            		add $s7, $s7, $t6
+            		j next
 
-five:       addi $t6, $zero, 5      # load Arabic value in register
-            j oper                  # jump to addition/subtraction portion
+		subtract:   sub $s7, $s7, $t6
 
-ten:        addi $t6, $zero, 10     # load Arabic value in register
-            j oper                  # jump to addition/subtraction portion
+		next:       # make sure this points to the register holding the SINGLE char
+            		beq $t0, $zero, print   # reached start of string, exit
+            		move $t5, $t6           # store current value for next loop
+            		addi $t0, $t0, -1       # decrement (move to preceding element)
+            		j charloop              # go back to beginning of loop
 
-fifty:      addi $t6, $zero, 50     # load Arabic value in register
-            j oper                  # jump to addition/subtraction portion
+		print:      
+			li $v0, 4               # print string
+            		la $a0, output          # the text for output
+            		syscall                 # call operating system       
 
-hundred:    addi $t6, $zero, 100    # load Arabic value in register
-            j oper                  # jump to addition/subtraction portion
+            		li $v0, 1               # print calculated Arabic integer
+            		move $a0, $s7           # the calculated Arabic integer
+            		syscall                 # call operating system
 
-fivehun:    addi $t6, $zero, 500    # load Arabic value in register
-            j oper                  # jump to addition/subtraction portion
+            		# loop; continue program
+            		j main
 
-thousand:   addi $t6, $zero, 1000   # load Arabic value in register
-            j oper                  # jump to addition/subtraction portion
-
-oper:       # determine whether the value needs to be added or subtracted,
-            # and then do the operation
-
-            # if current value is lower than previous value, subtract!
-            blt $t6, $t5, subtract
-
-            # otherwise, just add the new value to total
-            add $s7, $s7, $t6
-            j next
-
-subtract:   sub $s7, $s7, $t6
-
-next:       # make sure this points to the register holding the SINGLE char
-            beq $t0, $zero, print   # reached start of string, exit
-
-            move $t5, $t6           # store current value for next loop
-            addi $t0, $t0, -1       # decrement (move to preceding element)
-            j charloop              # go back to beginning of loop
-
-print:      li $v0, 4               # print string
-            la $a0, output          # the text for output
-            syscall                 # call operating system       
-
-            li $v0, 1               # print calculated Arabic integer
-            move $a0, $s7           # the calculated Arabic integer
-            syscall                 # call operating system
-
-            # loop; continue program
-            j main
-
-exit:       li $v0, 4               # print string
-            la $a0, stopped         # the text for stopped
-            syscall                 # call operating system
-
-            li $v0, 10              # finished .. stop .. return
-            syscall                 # to the Operating System
+		exit:      
+			li $v0, 4               # print string
+            		la $a0, stopped         # the text for stopped
+            		syscall                 # call operating system
+            		li $v0, 10              # finished .. stop .. return
+            		syscall                 # to the Operating System
