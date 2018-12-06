@@ -76,7 +76,7 @@
 			# allow for the user to enter both upper and lowercase Roman Numerals. This design was inspired by the "pass up or die" pattern 
 			# studied this semester.
 			mapCharacters:
-				add $t6, $0, $0 # the $t0 register is initalized - it will be used later 
+				add $s2, $0, $0 # the $t0 register is initalized - it will be used later 
 				# If the character is passed down to the sixty series, its ASCII character is then checked 
 				# if it is > 69. If so, it is passed down further to the next series. Else, it 
 				# lies between 60-69.
@@ -129,8 +129,9 @@
             				li $t1, 120 # ASCII 120 corresponds x and is loaded into $t1
            				beq $t2, $t1, conversionToTenHandler # advance to the conversion for 10 in arabic
 			#if you're here, it means you didn't branch earlier
-            		add $t5, $0, $0   # initialize comparison register
-            		j next # not valid Roman numeral; skip to next loop
+            		addi $s4, $0, 0   # initialize comparison register
+            		jal continue # not valid Roman numeral; skip to next loop
+            		j charloop
 			
 		
 			# Handles the conversion for the corresponding character. Since the mapCharacters function will dispatch 
@@ -142,57 +143,76 @@
 				# When the branch is jumped to this memory location, the 
 				# corresponding Arabic character is 1000
 				conversionToThousandHandler:   
-					addi $t6, $0, 1000 # load the corresponding value 
+					addi $s2, $0, 1000 # load the corresponding value 
             				j oper                  # jump to addition/subtraction portion
 				# When the branch is jumped to this memory location, the 
 				# corresponding Arabic character is 500
 				conversionToFiveHundredHandler:    
-					addi $t6, $0, 500 # load the corresponding value 
+					addi $s2, $0, 500 # load the corresponding value 
             				j oper                  # jump to addition/subtraction portion
 				# When the branch is jumped to this memory location, the 
 				# corresponding Arabic character is 100
 				conversionToHundredHandler:   
-					addi $t6, $0, 100 # load the corresponding value 
+					addi $s2, $0, 100 # load the corresponding value 
             				j oper                  # jump to addition/subtraction portion
 				# When the branch is jumped to this memory location, the 
 				# corresponding Arabic character is 50
 				conversionToFiftyHandler:      
-					addi $t6, $0, 50 # load the corresponding value 
+					addi $s2, $0, 50 # load the corresponding value 
             				j oper                  # jump to addition/subtraction portion
 				# When the branch is jumped to this memory location, the 
 				# corresponding Arabic character is 10
 				conversionToTenHandler:        
-					addi $t6, $0, 10 # load the corresponding value 
+					addi $s2, $0, 10 # load the corresponding value 
             				j oper                  # jump to addition/subtraction portion
 				# When the branch is jumped to this memory location, the 
 				# corresponding Arabic character is 5
 				conversionToFiveHandler:       
-					addi $t6, $0, 5 # load the corresponding value 
+					addi $s2, $0, 5 # load the corresponding value 
             				j oper                  # jump to addition/subtraction portion
 				# When the branch is jumped to this memory location, the 
 				# corresponding Arabic character is 1	
 				conversionToOneHandler:      
-					addi $t6, $0, 1 # load the corresponding value 
+					addi $s2, $0, 1 # load the corresponding value 
             				j oper                  # jump to addition/subtraction portion
 
 
+		
+		
+		
 		oper:       
 			# determine whether the value needs to be added or subtracted,
 			# and then do the operation
             		# if current value is lower than previous value, subtract!
-            		blt $t6, $t5, subtract
+            		blt $s2, $s4, subtract
             		# otherwise, just add the new value to total
-            		add $s7, $s7, $t6
+            		add $s7, $s7, $s2
             		j next
-
-		subtract:   sub $s7, $s7, $t6
-
-		next:       # make sure this points to the register holding the SINGLE char
             		beq $t0, $0, print   # reached start of string, exit
-            		move $t5, $t6           # store current value for next loop
+            		move $s4, $s2          # store current value for next loop
             		addi $t0, $t0, -1       # decrement (move to preceding element)
             		j charloop              # go back to beginning of loop
 
+		subtract:   sub $s7, $s7, $s2
+
+
+		continue:
+			beq $t0, $0, print   # reached start of string, exit
+            		move $s4, $s2          # store current value for next loop
+            		addi $t0, $t0, -1       # decrement (move to preceding element)
+            		jr $ra              # go back to beginning of loop
+            		
+         
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		print:      
 			li $v0, 4               # print string
             		la $a0, output          # the text for output
