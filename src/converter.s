@@ -11,7 +11,7 @@
 		main:                               
             		# populate $t7 with an array containing the Roman numerals
 
-            		# prompt user for input 
+            		#$a0 = integer to print
             		promptInput:
            			la $a0, entryPrompt # set string
            			li $v0, 4 # print string
@@ -22,7 +22,9 @@
             		# $a0 will conatin the address of input buffer and 
             		# $a1 will contain maximum number of characters to read. 
             		# In this case, the maximum number of characters to read will 
-            		# simply be 2 words 
+            		# simply be 2 words. Then, make a request to the OS kernel with 
+            		# a syscall by placing the value 8 in the $v0 register to read 
+            		# the string 
             		getInput:
             			la $a0, input # the address of input buffer (string)
             			move $a1, $a0 # maximum number of characters to read - the same as the input string 
