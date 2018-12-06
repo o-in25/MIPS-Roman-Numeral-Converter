@@ -44,7 +44,7 @@
 			getInputLength:
 				addu $s1, $s0, $t0 # get the input string at character i
             			lbu $a0, 0($s1) # load the character as a byte, per MIPS documentation
-            			bne $a0, $0, increment # if we are not at the end, increment the counter
+            			bne $a0, $0, increment # the null character is defined as 0 - per ASCII documentation; if the character is 0, the end of the string has been reached
             			j charloop # the end has been reach, continue on
 			
 			# Increment the index counter by 1,
@@ -53,22 +53,23 @@
 				addi $t0, $t0, 1 # increment the index
 				j getInputLength # go back to the loop
 
-
            		# convert char by char
 			charloop:   
 				# $t0 contains the length of the string
             			# $s0 contains the string
            			# work backwards on the string
-            			addu $s1, $s0, $t0 # get the input string at character i
+            			addu $s1, $s0, $t0 # add the length of the string into $s1
             			lbu $t2, 0($s1)  # load the character as a byte, per MIPS documentationt
            			# is $t2 equal to 'q'? then exit program
-           			add $t1, $0, $0
-            			addi $t1, $0, 48    # load ascii value of 'q'
-            			beq $t2, $t1, exit      # jump to exit
+            			addi $t1, $0, 48 # load ASCII value of the character of 0 - a well known constant found in the ASCII documentation		
+            			bne $t2, $t1, mapCharacters
+            			j exit
 
             		# which character is $s1? branches to find out
+			mapCharacters:
+				add $t6, $0, $0
 
-		        add $t6, $0, $0
+					        
             		addi $t1, $0, 73         # load I, 1, ascii 73
             		beq $t2, $t1, one       # it is a 1, jump to that
 	    		addi $t1, $0, 105         # load I, 1, ascii 73
@@ -103,7 +104,11 @@
             		beq $t2, $t1, thousand  # it is a 1000, jump to that
             		addi $t1, $0, 109          # load M, 1000, ascii 77
             		beq $t2, $t1, thousand  # it is a 1000, jump to that
+            		
 
+            			
+
+				
             		#if you're here, it means you didn't branch earlier
             		add $t5, $0, $0   # initialize comparison register
             		j next                  # not valid Roman numeral; skip to next loop
