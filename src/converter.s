@@ -53,57 +53,62 @@
 				addi $t0, $t0, 1 # increment the index
 				j getInputLength # go back to the loop
 
-           		# convert char by char
-			charloop:   
-				# $t0 contains the length of the string
-            			# $s0 contains the string
-           			# work backwards on the string
+           		# Once the length of the entered user string is computed,
+           		# we will work at character n, then n-1, decrementing until character 0. From the previous
+           		# subroutines, $t0 will hold the string length, and the $s0 will contain the 
+           		# string itself. If the next character is 0, this signifies user termination, and thus the program will enter 
+           		# its exit routine and will terminate. 
+			charloop:  
             			addu $s1, $s0, $t0 # add the length of the string into $s1
-            			lbu $t2, 0($s1)  # load the character as a byte, per MIPS documentationt
-           			# is $t2 equal to 'q'? then exit program
+            			lbu $t2, 0($s1)  # load the character as a byte, per MIPS documentation, beggining at the nth character 
             			addi $t1, $0, 48 # load ASCII value of the character of 0 - a well known constant found in the ASCII documentation		
-            			bne $t2, $t1, mapCharacters
-            			j exit
+            			bne $t2, $t1, mapCharacters # if the entered string is not 0, (i.e. the exit input) map the characters 
+            			j exit # the entered character is 0, and therefore the program will terminate 
 
-            		# which character is $s1? branches to find out
+			# Since the user entered string is not the termination character 
 			mapCharacters:
 				add $t6, $0, $0
+				sixtySeries:
+					bge $t1, 70, seventySeries
+            				li $t1, 67          # load C, 100, ascii 67
+            				beq $t2, $t1, hundred   # it is a 100, jump to that
+            				li $t1, 68          # load D, 500, ascii 68
+            				beq $t2, $t1, fivehun   # it is a 500, jump to that
+            			
+				seventySeries:
+					bge $t1, 80, eightySeries
+            				li $t1, 73         # load I, 1, ascii 73
+            				beq $t2, $t1, one       # it is a 1, jump to that
+            				addi $t1, $0, 76          # load L, 50, ascii 76
+            				beq $t2, $t1, fifty     # it is a 50, jump to that
+            				li $t1, 77          # load M, 1000, ascii 77
+            				beq $t2, $t1, thousand  # it is a 1000, jump to that
+	    		
+				eightySeries:     
+					bge $t1, 90, nintySeries  
+					li $t1, 86          # load V, 5, ascii 86
+            				beq $t2, $t1, five      # it is a 5, jump to that
+            				li $t1, 88          # load X, 10, ascii 88
+            				beq $t2, $t1, ten       # it is a 10, jump to that
+           			nintySeries:
+           				bge $t1, 100, hundredSeries  
+           				li $t1, 99          # load C, 100, ascii 67
+            				beq $t2, $t1, hundred   # it is a 100, jump to that
+            				
+           			hundredSeries:
+           				li $t1, 100          # load D, 500, ascii 68
+            				beq $t2, $t1, fivehun   # it is a 500, jump to that
+            				li $t1, 105         # load I, 1, ascii 73
+            				beq $t2, $t1, one       # it is a 1, jump to that
+            				li $t1, 109          # load M, 1000, ascii 77
+            				beq $t2, $t1, thousand  # it is a 1000, jump to tha
+            				li $t1, 108          # load L, 50, ascii 76
+            				beq $t2, $t1, fifty     # it is a 50, jump to thatt
+            				li $t1, 118          # load V, 5, ascii 86
+            				beq $t2, $t1, five      # it is a 5, jump to that
+            				li $t1, 120          # load X, 10, ascii 88
+           				beq $t2, $t1, ten       # it is a 10, jump to that
 
-					        
-            		addi $t1, $0, 73         # load I, 1, ascii 73
-            		beq $t2, $t1, one       # it is a 1, jump to that
-	    		addi $t1, $0, 105         # load I, 1, ascii 73
-            		beq $t2, $t1, one       # it is a 1, jump to that
-		
-            		addi $t1, $0, 86          # load V, 5, ascii 86
-            		beq $t2, $t1, five      # it is a 5, jump to that
-            		addi $t1, $0, 118          # load V, 5, ascii 86
-            		beq $t2, $t1, five      # it is a 5, jump to that
-
-            		addi $t1, $0, 88          # load X, 10, ascii 88
-            		beq $t2, $t1, ten       # it is a 10, jump to that
-	   		addi $t1, $0, 120          # load X, 10, ascii 88
-           		beq $t2, $t1, ten       # it is a 10, jump to that
-
-            		addi $t1, $0, 76          # load L, 50, ascii 76
-            		beq $t2, $t1, fifty     # it is a 50, jump to that
-   	    		addi $t1, $0, 108          # load L, 50, ascii 76
-            		beq $t2, $t1, fifty     # it is a 50, jump to that
-
-            		addi $t1, $0, 67          # load C, 100, ascii 67
-            		beq $t2, $t1, hundred   # it is a 100, jump to that
-            		addi $t1, $0, 99          # load C, 100, ascii 67
-            		beq $t2, $t1, hundred   # it is a 100, jump to that
-
-            		addi $t1, $0, 68          # load D, 500, ascii 68
-            		beq $t2, $t1, fivehun   # it is a 500, jump to that
-            		addi $t1, $0, 100          # load D, 500, ascii 68
-            		beq $t2, $t1, fivehun   # it is a 500, jump to that
-
-           		addi $t1, $0, 77          # load M, 1000, ascii 77
-            		beq $t2, $t1, thousand  # it is a 1000, jump to that
-            		addi $t1, $0, 109          # load M, 1000, ascii 77
-            		beq $t2, $t1, thousand  # it is a 1000, jump to that
             		
 
             			
