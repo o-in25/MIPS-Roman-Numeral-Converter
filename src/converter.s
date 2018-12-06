@@ -27,16 +27,24 @@
             		move $s0, $a0     # move string to register
             		add $t0, $0, $0
            		add $s7, $0, $0
-           		li $t0, 0               # initialize counter
-            		la $t7, romanNumeralList
+           		li $t0, 0 # the index of the input length loop - used to find the length of the input string =
+            		la $t7, romanNumeralList # load the roman numeral list (i.e. the string) now, while we are in main
 			
+			# Get the length of the input string by looping 
+			# through each character until we reach the end of 
+			# the input string. 
+			getInputLength:
+				addu $s1, $s0, $t0 # get the input string at character i
+            			lbu $a0, 0($s1) # load the character as a byte, per MIPS documentation
+            			bne $a0, $0, increment # 
+            			j charloop # go back to beginning of loo
 			
-			lengloop:   
-				addu $s1, $s0, $t0 # $s1 contains string[i]
-            			lbu $a0, 0($s1)          # load the byte of interest
-            			beq $a0, $0, charloop # reached end of string, stop counting
-            			addi $t0, $t0, 1        # increment counter (move onto next element)
-            			j lengloop              # go back to beginning of loop 
+			# Increment the index counter by 1,
+			# and keep looping through the string
+			increment:
+				addi $t0, $t0, 1 # increment the index
+				j getInputLength
+
 
            		# convert char by char
 			charloop:   
