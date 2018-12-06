@@ -83,75 +83,75 @@
 				sixtySeries:
 					bge $s6, 70, seventySeries # pass it down to the next series 
             				li $t1, 67 # ASCII 67 corresponds C and is loaded into $t1
-            				beq $t2, $t1, hundred # advance to the conversion handler for 100 in arabic
+            				beq $t2, $t1, conversionToHundredHandler # advance to the conversion handler for 100 in arabic
             				li $t1, 68 # ASCII 68 corresponds D and is loaded into $t1
-            				beq $t2, $t1, fivehun # advance to the conversion handler for 500 in arabic
+            				beq $t2, $t1, conversionToFiveHundredHandler # advance to the conversion handler for 500 in arabic
             			# If the character is passed down to the seventy series, its ASCII character is then checked 
 				# if it is > 79. If so, it is passed down further to the next series. Else, it 
 				# lies between 70-79.
 				seventySeries:
-					bge $s6, 80, eightySeries # pass it down to the next series 
+					bge $s6, 80, eightySeries # pass it down to the next series
             				li $t1, 73 # ASCII 73 corresponds I and is loaded into $t1
-            				beq $t2, $t1, one # advance to the conversion handler for 1 in arabic
-            				addi $t1, $0, 76 # ASCII 76 corresponds L and is loaded into $t1
-            				beq $t2, $t1, fifty # advance to the conversion handler for 50 in arabic
+            				beq $t2, $t1, conversionToOneHandler # advance to the conversion handler for 1 in arabic
+            				li $t1, 76 # ASCII 76 corresponds L and is loaded into $t1
+            				beq $t2, $t1, conversionToFiftyHandler # advance to the conversion handler for 50 in arabic
             				li $t1, 77 # ASCII 77 corresponds M and is loaded into $t1
-            				beq $t2, $t1, thousand # advance to the conversion handler for 1000 in arabic
+            				beq $t2, $t1, conversionToThousandHandler # advance to the conversion handler for 1000 in arabic
 	    			# If the character is passed down to the eighty series, its ASCII character is then checked 
 				# if it is > 89. If so, it is passed down further to the next series. Else, it 
 				# lies between 80-89.
 				eightySeries:     
 					bge $s6, 90, ninetySeries # pass it down to the next series 
 					li $t1, 86 # ASCII 86 corresponds V and is loaded into $t1
-            				beq $t2, $t1, five # advance to the conversion handler for 5 in arabic
+            				beq $t2, $t1, conversionToFiveHandler # advance to the conversion handler for 5 in arabic
             				li $t1, 88 # ASCII 88 corresponds X and is loaded into $t1
-            				beq $t2, $t1, ten # advance to the conversion handler for 10 in arabic
+            				beq $t2, $t1, conversionToTenHandler # advance to the conversion handler for 10 in arabic
             			# If the character is passed down to the ninety series, its ASCII character is then checked 
 				# if it is > 99. If so, it is passed down further to the next series. Else, it 
 				# lies between 90-99.
            			ninetySeries:
            				bge $s6, 100, hundredSeries  # pass it down to the next series  
            				li $t1, 99 # ASCII 99 corresponds c and is loaded into $t1
-            				beq $t2, $t1, hundred # advance to the conversion for 100 in arabic
+            				beq $t2, $t1, conversionToHundredHandler # advance to the conversion for 100 in arabic
             			# If the character is passed down to the hundred series, there are no futher
             			# possible ASCII candidates - and thus resides here. 
            			hundredSeries:
            				li $s6, 100 # ASCII 100 corresponds d and is loaded into $t1
-            				beq $t2, $t1, fivehun # advance to the conversion for 500 in arabic
+            				beq $t2, $t1, conversionToFiveHundredHandler # advance to the conversion for 500 in arabic
             				li $t1, 105 # ASCII 105 corresponds i and is loaded into $t1
-            				beq $t2, $t1, one # advance to the conversion for 1000 in arabic
+            				beq $t2, $t1, conversionToOneHandler # advance to the conversion for 1000 in arabic
             				li $t1, 108 # ASCII 108 corresponds l and is loaded into $t1
-            				beq $t2, $t1, fifty # advance to the conversion for 1 in arabic
+            				beq $t2, $t1, conversionToFiftyHandler # advance to the conversion for 1 in arabic
             				li $t1, 109 # ASCII 109 corresponds m and is loaded into $t1
-            				beq $t2, $t1, thousand # advance to the conversion for 50 in arabic
+            				beq $t2, $t1, conversionToThousandHandler # advance to the conversion for 50 in arabic
             				li $t1, 118 # ASCII 118 corresponds v and is loaded into $t1
-            				beq $t2, $t1, five # advance to the conversion for 5 in arabic
+            				beq $t2, $t1, conversionToFiveHandler # advance to the conversion for 5 in arabic
             				li $t1, 120 # ASCII 120 corresponds x and is loaded into $t1
-           				beq $t2, $t1, ten # advance to the conversion for 10 in arabic
+           				beq $t2, $t1, conversionToTenHandler # advance to the conversion for 10 in arabic
 			#if you're here, it means you didn't branch earlier
             		add $t5, $0, $0   # initialize comparison register
             		j next # not valid Roman numeral; skip to next loop
 			
 			
-			one:      
+			conversionToOneHandler:      
 				addi $t6, $0, 1      # load Arabic value in register
             			j oper                  # jump to addition/subtraction portion
-			five:       
+			conversionToFiveHandler:       
 				addi $t6, $0, 5      # load Arabic value in register
             			j oper                  # jump to addition/subtraction portion
-			ten:        
+			conversionToTenHandler:        
 				addi $t6, $0, 10     # load Arabic value in register
             			j oper                  # jump to addition/subtraction portion
-			fifty:      
+			conversionToFiftyHandler:      
 				addi $t6, $0, 50     # load Arabic value in register
             			j oper                  # jump to addition/subtraction portion
-			hundred:   
+			conversionToHundredHandler:   
 				addi $t6, $0, 100    # load Arabic value in register
             			j oper                  # jump to addition/subtraction portion
-			fivehun:    
+			conversionToFiveHundredHandler:    
 				addi $t6, $0, 500    # load Arabic value in register
             			j oper                  # jump to addition/subtraction portion
-			thousand:   
+			conversionToThousandHandler:   
 				addi $t6, $0, 1000   # load Arabic value in register
             			j oper                  # jump to addition/subtraction portion
 
