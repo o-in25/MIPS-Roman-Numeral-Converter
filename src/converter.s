@@ -116,7 +116,7 @@
             			# If the character is passed down to the hundred series, there are no futher
             			# possible ASCII candidates - and thus resides here. 
            			hundredSeries:
-           				li $s6, 100 # ASCII 100 corresponds d and is loaded into $t1
+           				li $t1, 100 # ASCII 100 corresponds d and is loaded into $t1
             				beq $t2, $t1, conversionToFiveHundredHandler # advance to the conversion for 500 in arabic
             				li $t1, 105 # ASCII 105 corresponds i and is loaded into $t1
             				beq $t2, $t1, conversionToOneHandler # advance to the conversion for 1000 in arabic
@@ -132,28 +132,49 @@
             		add $t5, $0, $0   # initialize comparison register
             		j next # not valid Roman numeral; skip to next loop
 			
-			
-			conversionToOneHandler:      
-				addi $t6, $0, 1      # load Arabic value in register
-            			j oper                  # jump to addition/subtraction portion
-			conversionToFiveHandler:       
-				addi $t6, $0, 5      # load Arabic value in register
-            			j oper                  # jump to addition/subtraction portion
-			conversionToTenHandler:        
-				addi $t6, $0, 10     # load Arabic value in register
-            			j oper                  # jump to addition/subtraction portion
-			conversionToFiftyHandler:      
-				addi $t6, $0, 50     # load Arabic value in register
-            			j oper                  # jump to addition/subtraction portion
-			conversionToHundredHandler:   
-				addi $t6, $0, 100    # load Arabic value in register
-            			j oper                  # jump to addition/subtraction portion
-			conversionToFiveHundredHandler:    
-				addi $t6, $0, 500    # load Arabic value in register
-            			j oper                  # jump to addition/subtraction portion
-			conversionToThousandHandler:   
-				addi $t6, $0, 1000   # load Arabic value in register
-            			j oper                  # jump to addition/subtraction portion
+		
+			# Handles the conversion for the corresponding character. Since the mapCharacters function will dispatch 
+			# what handler to jump to, the conversion handler will simply add into the $t6 register the corresponding value
+			# in arabic. Once the value is added to the regster, it is jumped to another subroutine. Since this handler will
+			# be entered when the branch condition is satisfied, there is no need to perform a jal - since the map will 
+			# jump to the appropriate handler. 
+			conversionHandler:
+				# When the branch is jumped to this memory location, the 
+				# corresponding Arabic character is 1000
+				conversionToThousandHandler:   
+					addi $t6, $0, 1000 # load the corresponding value 
+            				j oper                  # jump to addition/subtraction portion
+				# When the branch is jumped to this memory location, the 
+				# corresponding Arabic character is 500
+				conversionToFiveHundredHandler:    
+					addi $t6, $0, 500 # load the corresponding value 
+            				j oper                  # jump to addition/subtraction portion
+				# When the branch is jumped to this memory location, the 
+				# corresponding Arabic character is 100
+				conversionToHundredHandler:   
+					addi $t6, $0, 100 # load the corresponding value 
+            				j oper                  # jump to addition/subtraction portion
+				# When the branch is jumped to this memory location, the 
+				# corresponding Arabic character is 50
+				conversionToFiftyHandler:      
+					addi $t6, $0, 50 # load the corresponding value 
+            				j oper                  # jump to addition/subtraction portion
+				# When the branch is jumped to this memory location, the 
+				# corresponding Arabic character is 10
+				conversionToTenHandler:        
+					addi $t6, $0, 10 # load the corresponding value 
+            				j oper                  # jump to addition/subtraction portion
+				# When the branch is jumped to this memory location, the 
+				# corresponding Arabic character is 5
+				conversionToFiveHandler:       
+					addi $t6, $0, 5 # load the corresponding value 
+            				j oper                  # jump to addition/subtraction portion
+				# When the branch is jumped to this memory location, the 
+				# corresponding Arabic character is 1	
+				conversionToOneHandler:      
+					addi $t6, $0, 1 # load the corresponding value 
+            				j oper                  # jump to addition/subtraction portion
+
 
 		oper:       
 			# determine whether the value needs to be added or subtracted,
