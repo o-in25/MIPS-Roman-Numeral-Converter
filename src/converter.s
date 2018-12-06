@@ -7,47 +7,46 @@
 		
 .text 
 	.globl main
-	main:                               # convert roman numerals to arabic numerals
+		main:                               # convert roman numerals to arabic numerals
          
-            # initialize registers that we use
-            add $t0, $zero, $zero
-            add $t1, $zero, $zero
-            add $t2, $zero, $zero
-            add $t5, $zero, $zero
-            add $t6, $zero, $zero
-            add $t7, $zero, $zero
-            add $s0, $zero, $zero
-            add $s1, $zero, $zero
-            add $s7, $zero, $zero
+            		# initialize registers that we use
+          		 add $t0, $zero, $zero
+            		add $t1, $zero, $zero
+            		add $t2, $zero, $zero
+            		add $t5, $zero, $zero
+            		add $t6, $zero, $zero
+            		add $t7, $zero, $zero
+            		add $s0, $zero, $zero
+            		add $s1, $zero, $zero
+            		add $s7, $zero, $zero
 
-            # populate $t7 with an array containing the Roman numerals
+            		# populate $t7 with an array containing the Roman numerals
 
-            la $t7, romans
+            		la $t7, romans
             
-            # prompt user for input 
+            		# prompt user for input 
 
-            li $v0, 4               # print string
-            la $a0, prompt          # set string
-            syscall                 # print string
+            		li $v0, 4               # print string
+           		la $a0, prompt          # set string
+           		syscall                 # print string
 
-            li $v0, 8               # prompt for string
-            la $a0, inputString     # address for buffer
-            la $a1, 64              # size of buffer
-            syscall                 # get string
+            		li $v0, 8               # prompt for string
+            		la $a0, inputString     # address for buffer
+            		la $a1, 64              # size of buffer
+            		syscall                 # get string
 
-            # find out how long the characters are
+            		# find out how long the characters are
 
-            la $s0, inputString     # move string to register
-            li $t0, 0               # initialize counter
+            		la $s0, inputString     # move string to register
+           		li $t0, 0               # initialize counter
 
-lengloop:   add $s1, $s0, $t0       # $s1 contains string[i]
-            lb $a0, 0($s1)          # load the byte of interest
-
-            # make sure this points to the register holding the SINGLE char
-            beq $a0, $zero, convert # reached end of string, stop counting
-
-            addi $t0, $t0, 1        # increment counter (move onto next element)
-            j lengloop              # go back to beginning of loop 
+			lengloop:   
+				add $s1, $s0, $t0       # $s1 contains string[i]
+            			lb $a0, 0($s1)          # load the byte of interest
+            			# make sure this points to the register holding the SINGLE char
+            			beq $a0, $zero, convert # reached end of string, stop counting
+            			addi $t0, $t0, 1        # increment counter (move onto next element)
+            			j lengloop              # go back to beginning of loop 
 
             # convert user input to Arabic numerals character by character
 
