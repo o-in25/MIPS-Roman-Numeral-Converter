@@ -61,22 +61,32 @@
 			charloop:  
             			addu $s1, $s0, $t0 # add the length of the string into $s1
             			lbu $t2, 0($s1)  # load the character as a byte, per MIPS documentation, beggining at the nth character 
-            			addi $t1, $0, 48 # load ASCII value of the character of 0 - a well known constant found in the ASCII documentation		
+            			addi $t1, $0, 48 # load ASCII value of the character of 0 - a well known constant found in the ASCII documentation	
+            			move $s6, $t1 # move the ASCII character into a peristent register 
             			bne $t2, $t1, mapCharacters # if the entered string is not 0, (i.e. the exit input) map the characters 
             			j exit # the entered character is 0, and therefore the program will terminate 
 
-			# Since the user entered string is not the termination character 
+			# Since the user entered character is not the termination character, it is therefore a Roman Numeral. 
+			# Here, this relation will serve as a "pseudo map" data structure, where there wll exist a injective funtion 
+			# between each entered character and its corresponding ASCII character. Therefore, no two  characters will share the same 
+			# Roman numeral mapping. Here, the $s6 register will contain the well-known ASCII character. The mapCharacters funtion will
+			# "pass down" the character according to which ASCII series range it lies in. This is done for performance purposes, since
+			# this "pesudo-map" behaves more like a switch statement, and cannot be done in O(1) time, but O(n). Additionally, the map will
+			# allow for the user to enter both upper and lowercase Roman Numerals.
 			mapCharacters:
-				add $t6, $0, $0
+				add $t6, $0, $0 # the $t0 register is initalized - it will be used later 
+				# If the character is passed down to the sixty series, its ASCII character is then checked 
+				# if it is > 69. If so, it is passed down further to the next series. Else, it 
+				# lies between 60-69.
 				sixtySeries:
-					bge $t1, 70, seventySeries
+					bge $s6, 70, seventySeries
             				li $t1, 67          # load C, 100, ascii 67
             				beq $t2, $t1, hundred   # it is a 100, jump to that
             				li $t1, 68          # load D, 500, ascii 68
             				beq $t2, $t1, fivehun   # it is a 500, jump to that
             			
 				seventySeries:
-					bge $t1, 80, eightySeries
+					bge $s6, 80, eightySeries
             				li $t1, 73         # load I, 1, ascii 73
             				beq $t2, $t1, one       # it is a 1, jump to that
             				addi $t1, $0, 76          # load L, 50, ascii 76
@@ -85,18 +95,18 @@
             				beq $t2, $t1, thousand  # it is a 1000, jump to that
 	    		
 				eightySeries:     
-					bge $t1, 90, nintySeries  
+					bge $s6, 90, nintySeries  
 					li $t1, 86          # load V, 5, ascii 86
             				beq $t2, $t1, five      # it is a 5, jump to that
             				li $t1, 88          # load X, 10, ascii 88
             				beq $t2, $t1, ten       # it is a 10, jump to that
            			nintySeries:
-           				bge $t1, 100, hundredSeries  
+           				bge $s6, 100, hundredSeries  
            				li $t1, 99          # load C, 100, ascii 67
             				beq $t2, $t1, hundred   # it is a 100, jump to that
             				
            			hundredSeries:
-           				li $t1, 100          # load D, 500, ascii 68
+           				li $s6, 100          # load D, 500, ascii 68
             				beq $t2, $t1, fivehun   # it is a 500, jump to that
             				li $t1, 105         # load I, 1, ascii 73
             				beq $t2, $t1, one       # it is a 1, jump to that
