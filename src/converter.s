@@ -1,7 +1,14 @@
-.globl main
-main:                               # convert roman numerals to arabic numerals
-            .text
-
+.data
+	inputString: .space 64
+	romans: .asciiz "IVXLCDM"
+	prompt: .asciiz "\nEnter Roman Numerals or 0 to quit: \n"
+	output: .asciiz "The number you entered was: "
+	stopped: .asciiz "\nStopped.\n"
+		
+.text 
+	.globl main
+	main:                               # convert roman numerals to arabic numerals
+         
             # initialize registers that we use
             add $t0, $zero, $zero
             add $t1, $zero, $zero
@@ -159,11 +166,3 @@ exit:       li $v0, 4               # print string
 
             li $v0, 10              # finished .. stop .. return
             syscall                 # to the Operating System
-
-            .data
-inputString:
-            .space 64
-romans:     .asciiz "IVXLCDM"
-prompt:     .asciiz "\nEnter Roman Numerals or 0 to quit: \n"
-output:     .asciiz "The number you entered was: "
-stopped:    .asciiz "\nStopped.\n"
