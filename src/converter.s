@@ -16,45 +16,6 @@ main:                               # convert roman numerals to arabic numerals
             # populate $t7 with an array containing the Roman numerals
 
             la $t7, romans
-
-            # 0($t7) will contain I, 1, ascii 73
-            # 1($t7) will contain V, 5, ascii 86
-            # 2($t7) will contain X, 10, ascii 88
-            # 3($t7) will contain L, 50, ascii 76
-            # 4($t7) will contain C, 100, ascii 67
-            # 5($t7) will contain D, 500, ascii 68
-            # 6($t7) will contain M, 1000, ascii 77
-            
-            # test to make sure correct values are in array
-
-            #li $v0, 1               # print ascii int
-            #lb $a0, 0($t7)          # the first int of roman numerals
-            #syscall                 # call operating system
-
-            #li $v0, 1               # print ascii int
-            #lb $a0, 1($t7)          # the second int of roman numerals
-            #syscall                 # call operating system
-
-            #li $v0, 1               # print ascii int
-            #lb $a0, 2($t7)          # the third int of roman numerals
-            #syscall                 # call operating system
-
-            #li $v0, 1               # print ascii int
-            #lb $a0, 3($t7)          # the fourth int of roman numerals
-            #syscall                 # call operating system
-
-            #li $v0, 1               # print ascii int
-            #lb $a0, 4($t7)          # the fifth int of roman numerals
-            #syscall                 # call operating system
-
-            #li $v0, 1               # print ascii int
-            #lb $a0, 5($t7)          # the sixth int of roman numerals
-            #syscall                 # call operating system
-
-            #li $v0, 1               # print ascii int
-            #lb $a0, 6($t7)          # the seventh int of roman numerals
-            #syscall                 # call operating system           
-
             
             # prompt user for input 
 
