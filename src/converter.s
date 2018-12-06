@@ -10,7 +10,7 @@
 		main:                               # convert roman numerals to arabic numerals
          
             		# initialize registers that we use
-          		 add $t0, $zero, $zero
+          		add $t0, $zero, $zero
             		add $t1, $zero, $zero
             		add $t2, $zero, $zero
             		add $t5, $zero, $zero
@@ -48,65 +48,64 @@
             			addi $t0, $t0, 1        # increment counter (move onto next element)
             			j lengloop              # go back to beginning of loop 
 
-            # convert user input to Arabic numerals character by character
+            		# convert user input to Arabic numerals character by character
+			convert:   
+				addi $t0, $t0, -1       # adjust counter
 
-convert:    addi $t0, $t0, -1       # adjust counter
+           		# convert char by char
+			charloop:   
+				# $t0 contains the length of the string
+            			# $s0 contains the string
+           			# work backwards on the string
+            			add $s1, $s0, $t0       # $s1 contains string[i]
+            			lb $t2, 0($s1)          # load the ascii value of interest
 
-            # convert char by char
+           			# is $t2 equal to 'q'? then exit program
+            			addi $t1, $0, 48    # load ascii value of 'q'
+            			beq $t2, $t1, exit      # jump to exit
 
-charloop:   # $t0 contains the length of the string
-            # $s0 contains the string
-            # work backwards on the string
-
-            add $s1, $s0, $t0       # $s1 contains string[i]
-            lb $t2, 0($s1)          # load the ascii value of interest
-
-            # is $t2 equal to 'q'? then exit program
-            addi $t1, $0, 48    # load ascii value of 'q'
-            beq $t2, $t1, exit      # jump to exit
-
-            # which character is $s1? branches to find out
+            		# which character is $s1? branches to find out
 
 		
-            addi $t1, $0, 73         # load I, 1, ascii 73
-            beq $t2, $t1, one       # it is a 1, jump to that
-	    addi $t1, $0, 105         # load I, 1, ascii 73
-            beq $t2, $t1, one       # it is a 1, jump to that
+            		addi $t1, $0, 73         # load I, 1, ascii 73
+            		beq $t2, $t1, one       # it is a 1, jump to that
+	    		addi $t1, $0, 105         # load I, 1, ascii 73
+            		beq $t2, $t1, one       # it is a 1, jump to that
 		
 		
-            addi $t1, $0, 86          # load V, 5, ascii 86
-            beq $t2, $t1, five      # it is a 5, jump to that
-            addi $t1, $0, 118          # load V, 5, ascii 86
-            beq $t2, $t1, five      # it is a 5, jump to that
+            		addi $t1, $0, 86          # load V, 5, ascii 86
+            		beq $t2, $t1, five      # it is a 5, jump to that
+            		addi $t1, $0, 118          # load V, 5, ascii 86
+            		beq $t2, $t1, five      # it is a 5, jump to that
 
-            addi $t1, $0, 88          # load X, 10, ascii 88
-            beq $t2, $t1, ten       # it is a 10, jump to that
-	    addi $t1, $0, 120          # load X, 10, ascii 88
-            beq $t2, $t1, ten       # it is a 10, jump to that
+            		addi $t1, $0, 88          # load X, 10, ascii 88
+            		beq $t2, $t1, ten       # it is a 10, jump to that
+	   		addi $t1, $0, 120          # load X, 10, ascii 88
+           		beq $t2, $t1, ten       # it is a 10, jump to that
 
-            addi $t1, $0, 76          # load L, 50, ascii 76
-            beq $t2, $t1, fifty     # it is a 50, jump to that
-   	    addi $t1, $0, 108          # load L, 50, ascii 76
-            beq $t2, $t1, fifty     # it is a 50, jump to that
+            		addi $t1, $0, 76          # load L, 50, ascii 76
+            		beq $t2, $t1, fifty     # it is a 50, jump to that
+   	    		addi $t1, $0, 108          # load L, 50, ascii 76
+            		beq $t2, $t1, fifty     # it is a 50, jump to that
 
-            addi $t1, $0, 67          # load C, 100, ascii 67
-            beq $t2, $t1, hundred   # it is a 100, jump to that
-            addi $t1, $0, 99          # load C, 100, ascii 67
-            beq $t2, $t1, hundred   # it is a 100, jump to that
+            		addi $t1, $0, 67          # load C, 100, ascii 67
+            		beq $t2, $t1, hundred   # it is a 100, jump to that
+            		addi $t1, $0, 99          # load C, 100, ascii 67
+            		beq $t2, $t1, hundred   # it is a 100, jump to that
 
-            addi $t1, $0, 68          # load D, 500, ascii 68
-            beq $t2, $t1, fivehun   # it is a 500, jump to that
-            addi $t1, $0, 100          # load D, 500, ascii 68
-            beq $t2, $t1, fivehun   # it is a 500, jump to that
+            		addi $t1, $0, 68          # load D, 500, ascii 68
+            		beq $t2, $t1, fivehun   # it is a 500, jump to that
+            		addi $t1, $0, 100          # load D, 500, ascii 68
+            		beq $t2, $t1, fivehun   # it is a 500, jump to that
 
-            addi $t1, $0, 77          # load M, 1000, ascii 77
-            beq $t2, $t1, thousand  # it is a 1000, jump to that
-            addi $t1, $0, 109          # load M, 1000, ascii 77
-            beq $t2, $t1, thousand  # it is a 1000, jump to that
+           		addi $t1, $0, 77          # load M, 1000, ascii 77
+            		beq $t2, $t1, thousand  # it is a 1000, jump to that
+            		addi $t1, $0, 109          # load M, 1000, ascii 77
+            		beq $t2, $t1, thousand  # it is a 1000, jump to that
 
-            #if you're here, it means you didn't branch earlier
-            add $t5, $zero, $zero   # initialize comparison register
-            j next                  # not valid Roman numeral; skip to next loop
+            		#if you're here, it means you didn't branch earlier
+            		add $t5, $zero, $zero   # initialize comparison register
+            		j next                  # not valid Roman numeral; skip to next loop
 
 one:        addi $t6, $zero, 1      # load Arabic value in register
             j oper                  # jump to addition/subtraction portion
