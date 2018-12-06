@@ -1,50 +1,46 @@
 .data
-	inputString: .space 64
-	romans: .asciiz "IVXLCDM"
-	prompt: .asciiz "\nEnter Roman Numerals or 0 to quit: \n"
-	output: .asciiz "The number you entered was: "
-	stopped: .asciiz "\nStopped.\n"
+
+	entryPrompt: .asciiz "\nEnter Roman Numerals or 0 to quit: \n"
+	exitPrompt: .asciiz "\So long, and thanks for all the fish\n"
+	output: .asciiz "Arabic Numeral:  "
+	input: .space 64
+	romanNumeralList: .asciiz "IVXLCDM"
 		
 .text 
 	.globl main
-		main:                               # convert roman numerals to arabic numerals
-         
-
-
+		main:                               
             		# populate $t7 with an array containing the Roman numerals
-            		la $t7, romans
-            		# prompt user for input 
-            		li $v0, 4               # print string
-           		la $a0, prompt          # set string
-           		syscall                 # print string
 
+            		# prompt user for input 
+           		la $a0, entryPrompt          # set string
+           		li $v0, 4               # print string
+           		syscall                 # print string
+            		
+            		la $a0, input     # address for buffer
+            		la $a1, input              # size of buffer
             		li $v0, 8               # prompt for string
-            		la $a0, inputString     # address for buffer
-            		la $a1, 64              # size of buffer
             		syscall                 # get string
 
             		# find out how long the characters are
 
 
-            		la $s0, inputString     # move string to register
+            		move $s0, $a0     # move string to register
             		add $t0, $0, $0
-           		li $t0, 0               # initialize counter
            		add $s7, $0, $0
-
+           		li $t0, 0               # initialize counter
+            		la $t7, romanNumeralList
+			
+			
 			lengloop:   
-				add $s1, $s0, $t0       # $s1 contains string[i]
-            			lb $a0, 0($s1)          # load the byte of interest
-            			# make sure this points to the register holding the SINGLE char
-            			beq $a0, $0, convert # reached end of string, stop counting
+				addu $s1, $s0, $t0 # $s1 contains string[i]
+            			lbu $a0, 0($s1)          # load the byte of interest
+            			beq $a0, $0, charloop # reached end of string, stop counting
             			addi $t0, $t0, 1        # increment counter (move onto next element)
             			j lengloop              # go back to beginning of loop 
 
-            		# convert user input to Arabic numerals character by character
-			convert:   
-				addi $t0, $t0, -1       # adjust counter
-
            		# convert char by char
 			charloop:   
+			
 				# $t0 contains the length of the string
             			# $s0 contains the string
            			# work backwards on the string
@@ -152,7 +148,7 @@
 
 		exit:      
 			li $v0, 4               # print string
-            		la $a0, stopped         # the text for stopped
+            		la $a0, exitPrompt         # the text for stopped
             		syscall                 # call operating system
             		li $v0, 10              # finished .. stop .. return
             		syscall                 # to the Operating System
