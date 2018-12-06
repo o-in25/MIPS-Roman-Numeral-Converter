@@ -12,14 +12,22 @@
             		# populate $t7 with an array containing the Roman numerals
 
             		# prompt user for input 
-           		la $a0, entryPrompt          # set string
-           		li $v0, 4               # print string
-           		syscall                 # print string
+            		promptInput:
+           			la $a0, entryPrompt # set string
+           			li $v0, 4 # print string
+           			syscall # make a syscall to the kernel 
             		
-            		la $a0, input     # address for buffer
-            		la $a1, input              # size of buffer
-            		li $v0, 8               # prompt for string
-            		syscall                 # get string
+            		# Gets the input from the user, and stores the value in the 
+            		# $a0 register. Per the MIPS documentation, 
+            		# $a0 will conatin the address of input buffer and 
+            		# $a1 will contain maximum number of characters to read. 
+            		# In this case, the maximum number of characters to read will 
+            		# simply be 2 words 
+            		getInput:
+            			la $a0, input # the address of input buffer (string)
+            			move $a1, $a0 # maximum number of characters to read - the same as the input string 
+            			li $v0, 8 # prompt for string
+            			syscall # make a syscall to the kernel
 
             		# find out how long the characters are
 
@@ -36,8 +44,8 @@
 			getInputLength:
 				addu $s1, $s0, $t0 # get the input string at character i
             			lbu $a0, 0($s1) # load the character as a byte, per MIPS documentation
-            			bne $a0, $0, increment # 
-            			j charloop # go back to beginning of loo
+            			bne $a0, $0, increment # if we are not at the end, increment the counter
+            			j charloop # the end has been reach, continue on
 			
 			# Increment the index counter by 1,
 			# and keep looping through the string
